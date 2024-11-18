@@ -1,6 +1,6 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
-import { FaSearch, FaSearchDollar, FaSearchengin } from "react-icons/fa";
+import { FaSearch} from "react-icons/fa";
 
 interface SearchProps {
   search: string;
