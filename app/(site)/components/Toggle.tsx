@@ -7,9 +7,10 @@ import CryptoTable from "./Table";
 import Search from "./Search"; 
 import {FaTable, FaTh} from "react-icons/fa";
 import Box from "@/components/Box";
+import { Coin } from "@/types";
 
 interface ToggleProps {
-  coins: any[];
+  coins: Coin[];
   search: string; 
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
