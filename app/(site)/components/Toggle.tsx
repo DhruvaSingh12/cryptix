@@ -31,15 +31,15 @@ const Toggle: React.FC<ToggleProps> = ({ coins, search, handleChange, setSearch 
         </div>
 
         <Tooltip title={`Switch to ${view === "grid" ? "Table" : "Grid"} View`}>
-          <IconButton
+          <button
             onClick={handleViewToggle}
-            className="hover:bg-gray-300 bg-gray-200 p-[10px] mb-6 hover:cursor-pointer">
+            className="hover:bg-gray-300 rounded-lg bg-gray-200 p-[10px] mb-6 hover:cursor-pointer">
             {view === "grid" ? (
               <FaTable className="text-black text-[30px]" />
             ) : (
               <FaTh className="text-black text-[30px]" />
             )}
-          </IconButton>
+          </button>
         </Tooltip>
       </Box>
 
