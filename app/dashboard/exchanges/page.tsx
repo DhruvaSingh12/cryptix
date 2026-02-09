@@ -30,7 +30,7 @@ export default function ExchangesPage() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-4 lg:p-6">
             <PageHeader
                 icon={Building2}
                 iconColor="text-purple-500"

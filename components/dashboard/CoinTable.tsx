@@ -14,10 +14,10 @@ import { PriceChange } from "@/components/PriceChange";
 import { Sparkline } from "@/components/dashboard/Sparkline";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
-import { formatCurrency, formatCompactNumber, formatPercentage } from "@/lib/utils/format";
+import { formatCurrency, formatCompactNumber } from "@/lib/utils/format";
+import { cn } from "@/lib/utils";
 
 interface CoinTableProps {
     coins: Coin[];
@@ -25,52 +25,64 @@ interface CoinTableProps {
 }
 
 export function CoinTable({ coins, loading = false }: CoinTableProps) {
-
     return (
-        <div className="w-full">
-            <Table>
-                <TableHeader>
-                    <TableRow className="hover:bg-transparent border-b border-border/50">
-                        <TableHead className="w-10 pl-4"></TableHead>
-                        <TableHead className="w-12 text-center text-xs font-bold text-foreground">#</TableHead>
-                        <TableHead className="text-xs font-bold text-foreground">Coin</TableHead>
-                        <TableHead className="text-right text-xs font-bold text-foreground">Price</TableHead>
-                        <TableHead className="text-right text-xs font-bold text-foreground">1h</TableHead>
-                        <TableHead className="text-right text-xs font-bold text-foreground">24h</TableHead>
-                        <TableHead className="text-right text-xs font-bold text-foreground">7d</TableHead>
-                        <TableHead className="text-right text-xs font-bold text-foreground">24h Volume</TableHead>
-                        <TableHead className="text-right text-xs font-bold text-foreground">Market Cap</TableHead>
-                        <TableHead className="text-right w-40 pr-6 text-xs font-bold text-foreground">Last 7 Days</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {loading ? (
-                        [...Array(10)].map((_, i) => (
-                            <TableRow key={i}>
-                                <TableCell colSpan={10}>
-                                    <Skeleton className="h-16 w-full" />
+        <div className="w-full border border-border/50 rounded-xl overflow-hidden shadow-premium bg-card">
+            <div className="overflow-x-auto">
+                <Table>
+                    <TableHeader>
+                        <TableRow className="hover:bg-transparent border-b border-border/30 bg-muted/30">
+                            <TableHead className="w-10 pl-4"></TableHead>
+                            <TableHead className="w-10 text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">#</TableHead>
+                            <TableHead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Coin</TableHead>
+                            <TableHead className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Price</TableHead>
+                            <TableHead className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wide hidden md:table-cell">1h</TableHead>
+                            <TableHead className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">24h</TableHead>
+                            <TableHead className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wide hidden lg:table-cell">7d</TableHead>
+                            <TableHead className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wide hidden xl:table-cell">Volume</TableHead>
+                            <TableHead className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wide hidden lg:table-cell">Market Cap</TableHead>
+                            <TableHead className="text-right w-32 pr-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide hidden md:table-cell">7D Chart</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {loading ? (
+                            [...Array(10)].map((_, i) => (
+                                <TableRow key={i} className="border-b border-border/20">
+                                    <TableCell colSpan={10}>
+                                        <Skeleton className="h-14 w-full" />
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : coins.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={10} className="text-center py-16 text-muted-foreground">
+                                    <div className="flex flex-col items-center gap-2">
+                                        <span className="text-2xl">📊</span>
+                                        <span className="font-medium">No coins found</span>
+                                    </div>
                                 </TableCell>
                             </TableRow>
-                        ))
-                    ) : coins.length === 0 ? (
-                        <TableRow>
-                            <TableCell colSpan={10} className="text-center py-10 text-muted-foreground font-medium">
-                                No coins found
-                            </TableCell>
-                        </TableRow>
-                    ) : (
-                        coins.map((coin) => (
-                            <TableRow key={coin.id} className="group hover:bg-muted/50 transition-colors border-b border-border/50 h-[64px]">
-                                <TableCell className="pl-4">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/30 hover:text-yellow-500 transition-colors">
-                                        <Star className="h-4 w-4" />
-                                    </Button>
-                                </TableCell>
-                                <TableCell className="text-center font-medium text-xs text-muted-foreground">
-                                    {coin.market_cap_rank}
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-3">
+                        ) : (
+                            coins.map((coin, index) => (
+                                <TableRow
+                                    key={coin.id}
+                                    className={cn(
+                                        "group hover:bg-muted/50 transition-colors h-[60px]",
+                                        index !== coins.length - 1 && "border-b border-border/20"
+                                    )}
+                                >
+                                    <TableCell className="pl-4">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-7 w-7 text-muted-foreground/30 hover:text-yellow-500 hover:bg-yellow-500/10 transition-all"
+                                        >
+                                            <Star className="h-3.5 w-3.5" />
+                                        </Button>
+                                    </TableCell>
+                                    <TableCell className="text-center font-medium text-xs text-muted-foreground tabular-nums">
+                                        {coin.market_cap_rank}
+                                    </TableCell>
+                                    <TableCell>
                                         <Link
                                             href={`/dashboard/explore/${coin.id}`}
                                             className="flex items-center gap-3 group/link"
@@ -78,69 +90,69 @@ export function CoinTable({ coins, loading = false }: CoinTableProps) {
                                             <Image
                                                 src={coin.image}
                                                 alt={coin.name}
-                                                width={24}
-                                                height={24}
+                                                width={28}
+                                                height={28}
                                                 className="rounded-full"
                                             />
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-bold whitespace-nowrap text-sm group-hover/link:text-primary transition-colors">{coin.name}</span>
-                                                <span className="text-[11px] font-bold text-muted-foreground/70 uppercase">
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="font-semibold text-sm whitespace-nowrap group-hover/link:text-primary transition-colors">
+                                                    {coin.name}
+                                                </span>
+                                                <span className="text-[10px] text-muted-foreground uppercase font-medium">
                                                     {coin.symbol}
                                                 </span>
                                             </div>
                                         </Link>
-                                        {(coin.symbol === "btc" || coin.symbol === "eth") && (
-                                            <Badge variant="outline" className="text-[9px] py-0 px-1 border-emerald-500/30 text-emerald-500 bg-emerald-500/5 font-bold uppercase tracking-tighter ml-1">
-                                                Buy
-                                            </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <span className="font-semibold text-sm tabular-nums">
+                                            {formatCurrency(coin.current_price)}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell className="text-right hidden md:table-cell">
+                                        <PriceChange
+                                            value={coin.price_change_percentage_1h_in_currency || 0}
+                                            showIcon={false}
+                                            className="text-xs justify-end"
+                                        />
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <PriceChange
+                                            value={coin.price_change_percentage_24h}
+                                            showIcon={false}
+                                            className="text-xs justify-end"
+                                        />
+                                    </TableCell>
+                                    <TableCell className="text-right hidden lg:table-cell">
+                                        <PriceChange
+                                            value={coin.price_change_percentage_7d_in_currency || 0}
+                                            showIcon={false}
+                                            className="text-xs justify-end"
+                                        />
+                                    </TableCell>
+                                    <TableCell className="text-right font-medium text-xs text-muted-foreground hidden xl:table-cell tabular-nums">
+                                        {formatCompactNumber(coin.total_volume)}
+                                    </TableCell>
+                                    <TableCell className="text-right font-medium text-xs text-muted-foreground hidden lg:table-cell tabular-nums">
+                                        {formatCurrency(coin.market_cap, 0, 0)}
+                                    </TableCell>
+                                    <TableCell className="text-right pr-4 hidden md:table-cell">
+                                        {coin.sparkline_in_7d && (
+                                            <div className="flex justify-end">
+                                                <Sparkline
+                                                    data={coin.sparkline_in_7d.price}
+                                                    isPositive={(coin.price_change_percentage_7d_in_currency || 0) >= 0}
+                                                />
+                                            </div>
                                         )}
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-right font-bold text-sm">
-                                    {formatCurrency(coin.current_price)}
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <PriceChange
-                                        value={coin.price_change_percentage_1h_in_currency || 0}
-                                        showIcon={true}
-                                        className="text-xs font-bold"
-                                    />
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <PriceChange
-                                        value={coin.price_change_percentage_24h}
-                                        showIcon={true}
-                                        className="text-xs font-bold"
-                                    />
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <PriceChange
-                                        value={coin.price_change_percentage_7d_in_currency || 0}
-                                        showIcon={true}
-                                        className="text-xs font-bold"
-                                    />
-                                </TableCell>
-                                <TableCell className="text-right font-medium text-xs text-foreground">
-                                    {formatCompactNumber(coin.total_volume)}
-                                </TableCell>
-                                <TableCell className="text-right font-medium text-xs text-foreground">
-                                    {formatCurrency(coin.market_cap, 0, 0)}
-                                </TableCell>
-                                <TableCell className="text-right pr-6">
-                                    {coin.sparkline_in_7d && (
-                                        <div className="flex justify-end p-1">
-                                            <Sparkline
-                                                data={coin.sparkline_in_7d.price}
-                                                isPositive={(coin.price_change_percentage_7d_in_currency || 0) >= 0}
-                                            />
-                                        </div>
-                                    )}
-                                </TableCell>
-                            </TableRow>
-                        ))
-                    )}
-                </TableBody>
-            </Table>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
         </div>
     );
 }
+

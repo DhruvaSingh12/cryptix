@@ -81,7 +81,7 @@ export default function WatchlistPage() {
 
     if (loading) {
         return (
-            <div className="space-y-6">
+            <div className="space-y-6 p-4 lg:p-6">
                 <Skeleton className="h-12 w-64" />
                 <Skeleton className="h-96" />
             </div>
@@ -89,7 +89,7 @@ export default function WatchlistPage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-4 lg:p-6">
             <PageHeader
                 icon={Star}
                 iconColor="text-yellow-500"

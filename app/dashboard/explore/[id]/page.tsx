@@ -78,7 +78,7 @@ export default function CoinDetailPage() {
 
     if (loading) {
         return (
-            <div className="space-y-6">
+            <div className="space-y-6 p-4 lg:p-6">
                 <Skeleton className="h-12 w-64" />
                 <div className="grid gap-4 md:grid-cols-3">
                     <Skeleton className="h-32" />
@@ -105,7 +105,7 @@ export default function CoinDetailPage() {
     const isPositive = priceChange24h >= 0;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-4 lg:p-6">
             <CoinDetailHeader coin={coin} formatPrice={formatPrice} />
 
             <CoinStatsCards

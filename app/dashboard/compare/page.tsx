@@ -39,7 +39,7 @@ export default function ComparePage() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-4 lg:p-6">
             <PageHeader
                 icon={BarChart3}
                 iconColor="text-cyan-500"

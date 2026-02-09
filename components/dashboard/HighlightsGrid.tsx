@@ -1,7 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Flame, Rocket, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,58 +13,72 @@ interface HighlightsGridProps {
 
 export function HighlightsGrid({ trending, gainers }: HighlightsGridProps) {
     return (
-        <div className="grid gap-6 lg:grid-cols-2 mb-8">
+        <div className="grid gap-4 lg:grid-cols-2">
             {/* Trending */}
-            <Card className="border-none shadow-sm bg-card">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <div className="flex items-center gap-2">
-                        <Flame className="h-5 w-5 text-orange-500 fill-orange-500/20" />
-                        <CardTitle className="text-base font-bold">Trending</CardTitle>
+            <Card className="border border-border/50 shadow-premium bg-card overflow-hidden hover-lift">
+                <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-border/30">
+                    <div className="flex items-center gap-2.5">
+                        <div className="h-8 w-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                            <Flame className="h-4 w-4 text-orange-500" />
+                        </div>
+                        <CardTitle className="text-sm font-semibold">Trending</CardTitle>
                     </div>
-                    <Link href="/dashboard/trending" className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-1 transition-colors">
-                        View more <ChevronRight className="h-3 w-3" />
+                    <Link href="/dashboard/trending" className="text-xs font-medium text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
+                        View all <ChevronRight className="h-3.5 w-3.5" />
                     </Link>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    {trending.slice(0, 3).map((coin, idx) => (
-                        <Link key={coin.item.id} href={`/dashboard/explore/${coin.item.id}`} className="flex items-center justify-between group hover:bg-accent/50 p-2 rounded-lg -mx-2 transition-colors">
+                <CardContent className="p-0">
+                    {trending.slice(0, 4).map((coin, idx) => (
+                        <Link
+                            key={coin.item.id}
+                            href={`/dashboard/explore/${coin.item.id}`}
+                            className="flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border/20 last:border-0"
+                        >
                             <div className="flex items-center gap-3">
-                                <span className="text-xs font-bold text-muted-foreground w-4">{idx + 1}</span>
-                                <Image src={coin.item.thumb} alt={coin.item.name} width={28} height={28} className="rounded-full" />
-                                <span className="text-sm font-bold group-hover:text-primary transition-colors">{coin.item.name}</span>
-                                <span className="text-xs text-muted-foreground font-medium uppercase">{coin.item.symbol}</span>
+                                <span className="text-xs font-semibold text-muted-foreground/60 w-4 tabular-nums">{idx + 1}</span>
+                                <Image src={coin.item.thumb} alt={coin.item.name} width={32} height={32} className="rounded-full" />
+                                <div>
+                                    <span className="text-sm font-semibold block">{coin.item.name}</span>
+                                    <span className="text-[11px] text-muted-foreground uppercase">{coin.item.symbol}</span>
+                                </div>
                             </div>
-                            <div className="text-right">
-                                <PriceChange value={coin.item.data?.price_change_percentage_24h?.usd || 0} className="text-xs font-bold" />
-                            </div>
+                            <PriceChange value={coin.item.data?.price_change_percentage_24h?.usd || 0} className="text-xs font-semibold" />
                         </Link>
                     ))}
                 </CardContent>
             </Card>
 
             {/* Top Gainers */}
-            <Card className="border-none shadow-sm bg-card">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <div className="flex items-center gap-2">
-                        <Rocket className="h-5 w-5 text-emerald-500 fill-emerald-500/20" />
-                        <CardTitle className="text-base font-bold">Top Gainers</CardTitle>
+            <Card className="border border-border/50 shadow-premium bg-card overflow-hidden hover-lift">
+                <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-border/30">
+                    <div className="flex items-center gap-2.5">
+                        <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                            <Rocket className="h-4 w-4 text-emerald-500" />
+                        </div>
+                        <CardTitle className="text-sm font-semibold">Top Gainers</CardTitle>
                     </div>
-                    <Link href="/dashboard/explore" className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-1 transition-colors">
-                        View more <ChevronRight className="h-3 w-3" />
+                    <Link href="/dashboard/explore" className="text-xs font-medium text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
+                        View all <ChevronRight className="h-3.5 w-3.5" />
                     </Link>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    {gainers.slice(0, 3).map((coin, idx) => (
-                        <Link key={coin.id} href={`/dashboard/explore/${coin.id}`} className="flex items-center justify-between group hover:bg-accent/50 p-2 rounded-lg -mx-2 transition-colors">
+                <CardContent className="p-0">
+                    {gainers.slice(0, 4).map((coin, idx) => (
+                        <Link
+                            key={coin.id}
+                            href={`/dashboard/explore/${coin.id}`}
+                            className="flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border/20 last:border-0"
+                        >
                             <div className="flex items-center gap-3">
-                                <span className="text-xs font-bold text-muted-foreground w-4">{idx + 1}</span>
-                                <Image src={coin.image} alt={coin.name} width={28} height={28} className="rounded-full" />
-                                <span className="text-sm font-bold group-hover:text-primary transition-colors">{coin.name}</span>
-                                <span className="text-xs text-muted-foreground font-medium uppercase">{coin.symbol}</span>
+                                <span className="text-xs font-semibold text-muted-foreground/60 w-4 tabular-nums">{idx + 1}</span>
+                                <Image src={coin.image} alt={coin.name} width={32} height={32} className="rounded-full" />
+                                <div>
+                                    <span className="text-sm font-semibold block">{coin.name}</span>
+                                    <span className="text-[11px] text-muted-foreground uppercase">{coin.symbol}</span>
+                                </div>
                             </div>
-                            <div className="text-right flex flex-col items-end gap-0.5">
-                                <span className="text-sm font-bold">${coin.current_price.toLocaleString()}</span>
-                                <PriceChange value={coin.price_change_percentage_24h} className="text-xs font-bold" />
+                            <div className="text-right">
+                                <span className="text-sm font-semibold tabular-nums block">${coin.current_price.toLocaleString()}</span>
+                                <PriceChange value={coin.price_change_percentage_24h} showIcon={false} className="text-xs font-semibold" />
                             </div>
                         </Link>
                     ))}
@@ -74,3 +87,4 @@ export function HighlightsGrid({ trending, gainers }: HighlightsGridProps) {
         </div>
     );
 }
+

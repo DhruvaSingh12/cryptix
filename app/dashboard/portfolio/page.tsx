@@ -186,7 +186,7 @@ export default function PortfolioPage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-4 lg:p-6">
             <PageHeader
                 icon={Wallet}
                 iconColor="text-emerald-500"

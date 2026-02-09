@@ -1,30 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Zap, TrendingUp, BarChart3, Globe } from "lucide-react";
+import { Zap, ChevronDown } from "lucide-react";
 import coinGeckoAPI from "@/lib/api/coingecko";
 import { Coin } from "@/lib/api/types";
 import { GlobalStatsBar } from "@/components/dashboard/GlobalStatsBar";
 import { HighlightsGrid } from "@/components/dashboard/HighlightsGrid";
 import { CoinTable } from "@/components/dashboard/CoinTable";
-import { Sparkline } from "@/components/dashboard/Sparkline";
-import { formatCurrency, formatCompactNumber } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/format";
 
 export default function DashboardPage() {
-    const { data: session } = useSession();
     const [globalData, setGlobalData] = useState<any>(null);
     const [trending, setTrending] = useState<any[]>([]);
     const [gainers, setGainers] = useState<Coin[]>([]);
     const [coins, setCoins] = useState<Coin[]>([]);
     const [loading, setLoading] = useState(true);
     const [showHighlights, setShowHighlights] = useState(true);
+    const [activeTab, setActiveTab] = useState("all");
 
     useEffect(() => {
         fetchAllData();
@@ -62,16 +58,16 @@ export default function DashboardPage() {
 
     if (loading) {
         return (
-            <div className="space-y-6 min-h-screen bg-gray-50/50 dark:bg-background">
+            <div className="space-y-6 min-h-screen p-4 lg:p-6">
                 <Skeleton className="h-10 w-full rounded-none" />
-                <div className="container mx-auto px-4 space-y-8 py-8 max-w-7xl">
+                <div className="container mx-auto px-4 space-y-8 py-8 max-w-[1400px]">
                     <div className="space-y-2">
                         <Skeleton className="h-8 w-1/3" />
                         <Skeleton className="h-4 w-1/2" />
                     </div>
-                    <div className="grid gap-4 md:grid-cols-4">
-                        {[...Array(4)].map((_, i) => (
-                            <Skeleton key={i} className="h-32 rounded-xl" />
+                    <div className="grid gap-4 md:grid-cols-2">
+                        {[...Array(2)].map((_, i) => (
+                            <Skeleton key={i} className="h-48 rounded-xl" />
                         ))}
                     </div>
                     <Skeleton className="h-[600px] rounded-xl" />
@@ -82,121 +78,87 @@ export default function DashboardPage() {
 
     const marketChange = globalData?.market_cap_change_percentage_24h_usd || 0;
     const totalMarketCap = globalData?.total_market_cap?.usd || 0;
-    const totalVolume = globalData?.total_volume?.usd || 0;
-    const btcDominance = globalData?.market_cap_percentage?.btc || 0;
-    const activeCryptos = globalData?.active_cryptocurrencies || 0;
+
+    const tabs = [
+        { id: "all", label: "All Assets" },
+        { id: "gainers", label: "Gainers" },
+        { id: "losers", label: "Losers" },
+        { id: "new", label: "New Listings" },
+    ];
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-background">
             <GlobalStatsBar data={globalData} />
 
-            <div className="container mx-auto py-4 px-4 space-y-8">
+            <div className="container mx-auto py-6 px-4 md:px-6 space-y-6 max-w-[1400px]">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div className="space-y-1">
-                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
                             Market Overview
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            Global crypto market cap is <span className="font-bold text-foreground">{formatCurrency(totalMarketCap)}</span>, a <span className={marketChange >= 0 ? "text-emerald-500 font-bold" : "text-red-500 font-bold"}>{marketChange >= 0 ? "+" : ""}{marketChange.toFixed(2)}%</span> change over the last day.
+                            Global crypto market cap is{" "}
+                            <span className="font-semibold text-foreground">
+                                {formatCurrency(totalMarketCap)}
+                            </span>
+                            , a{" "}
+                            <span className={marketChange >= 0 ? "text-emerald-500 font-semibold" : "text-red-500 font-semibold"}>
+                                {marketChange >= 0 ? "+" : ""}{marketChange.toFixed(2)}%
+                            </span>{" "}
+                            change over the last day.
                         </p>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Label htmlFor="highlights" className="text-xs font-bold cursor-pointer text-muted-foreground">Show Highlights</Label>
-                        <Switch
-                            id="highlights"
-                            checked={showHighlights}
-                            onCheckedChange={setShowHighlights}
-                            className="scale-90"
-                        />
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                            <Label htmlFor="highlights" className="text-xs font-medium cursor-pointer">
+                                Show Highlights
+                            </Label>
+                            <Switch
+                                id="highlights"
+                                checked={showHighlights}
+                                onCheckedChange={setShowHighlights}
+                                className="scale-90"
+                            />
+                        </div>
                     </div>
                 </div>
 
-                {/* Key Metrics Grid */}
-                {showHighlights && (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card className="border-none shadow-sm bg-card hover:shadow-md transition-shadow">
-                            <CardContent className="p-6 flex flex-col justify-between h-full">
-                                <div className="space-y-1">
-                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Market Cap</p>
-                                    <p className="text-2xl font-bold text-foreground">{formatCompactNumber(totalMarketCap)}</p>
-                                </div>
-                                <div className="mt-4 h-10 w-full opacity-50">
-                                    {coins[0]?.sparkline_in_7d && (
-                                        <Sparkline
-                                            data={coins[0].sparkline_in_7d.price}
-                                            isPositive={marketChange >= 0}
-                                        />
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="border-none shadow-sm bg-card hover:shadow-md transition-shadow">
-                            <CardContent className="p-6 flex flex-col justify-between h-full">
-                                <div className="space-y-1">
-                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">24h Volume</p>
-                                    <p className="text-2xl font-bold text-foreground">{formatCompactNumber(totalVolume)}</p>
-                                </div>
-                                <div className="mt-4 flex items-center gap-2">
-                                    <BarChart3 className="h-8 w-8 text-primary/20" />
-                                    <span className="text-xs text-muted-foreground font-medium">Vol/Cap: {((totalVolume / totalMarketCap) * 100).toFixed(2)}%</span>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="border-none shadow-sm bg-card hover:shadow-md transition-shadow">
-                            <CardContent className="p-6 flex flex-col justify-between h-full">
-                                <div className="space-y-1">
-                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Dominance</p>
-                                    <p className="text-2xl font-bold text-foreground">BTC {btcDominance.toFixed(1)}%</p>
-                                </div>
-                                <div className="mt-4 w-full bg-secondary/50 h-2 rounded-full overflow-hidden">
-                                    <div className="bg-orange-500 h-full" style={{ width: `${btcDominance}%` }} />
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="border-none shadow-sm bg-card hover:shadow-md transition-shadow">
-                            <CardContent className="p-6 flex flex-col justify-between h-full">
-                                <div className="space-y-1">
-                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Active Coins</p>
-                                    <p className="text-2xl font-bold text-foreground">{activeCryptos.toLocaleString()}</p>
-                                </div>
-                                <div className="mt-4 flex items-center gap-2">
-                                    <Globe className="h-8 w-8 text-blue-500/20" />
-                                    <span className="text-xs text-muted-foreground font-medium">Across {globalData?.markets?.toLocaleString()} exchanges</span>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-                )}
-
-                {/* Highlights Grid - Now Full Width Below Metrics */}
+                {/* Highlights Grid */}
                 {showHighlights && (
                     <HighlightsGrid trending={trending} gainers={gainers} />
                 )}
 
                 {/* Main Content Area */}
                 <div className="space-y-4">
-                    {/* Filters - Simplified */}
-                    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                        <Button variant="secondary" size="sm" className="bg-white dark:bg-card border border-border/50 text-foreground font-bold px-4 h-9 shadow-sm hover:bg-gray-50">All Assets</Button>
-                        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground font-bold px-4 h-9 whitespace-nowrap">Gainers & Losers</Button>
-                        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground font-bold px-4 h-9 whitespace-nowrap">New Listings</Button>
-                        <div className="ml-auto">
-                            <Button variant="outline" size="sm" className="h-9 bg-white dark:bg-card border-border/50 font-bold gap-2 shadow-sm text-xs">
-                                <Zap className="h-3.5 w-3.5" />
-                                Customize
-                            </Button>
+                    {/* Tab Filters */}
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-xl">
+                            {tabs.map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${activeTab === tab.id
+                                        ? "bg-card text-foreground shadow-sm"
+                                        : "text-muted-foreground hover:text-foreground"
+                                        }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
                         </div>
+                        <Button variant="outline" size="sm" className="h-9 gap-2 text-xs font-medium hidden sm:flex">
+                            <Zap className="h-3.5 w-3.5" />
+                            Customize
+                            <ChevronDown className="h-3 w-3 opacity-50" />
+                        </Button>
                     </div>
 
-                    <div className="rounded-xl border border-border/40 bg-card shadow-sm overflow-hidden">
-                        <CoinTable coins={coins} loading={loading} />
-                    </div>
+                    {/* Coin Table */}
+                    <CoinTable coins={coins} loading={loading} />
                 </div>
             </div>
         </div>
     );
 }
+
